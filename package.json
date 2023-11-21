@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx tsc",
     "format": "npx eslint . --fix",
-    "lint": "npx eslint ."
+    "lint": "npx eslint .",
+    "lookup": "npx node build/ipstack.js lookup"
   },
   "keywords": [],
   "author": "",
