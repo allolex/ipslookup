@@ -9,6 +9,11 @@ import axios from "axios"
 // The IpStack API key should remain secret, so we will store it in the environment.
 const apiKey = process.env["IPSTACK_API_KEY"]
 
+if (!apiKey) {
+    process.stderr.write("IPSTACK_API_KEY must be defined in your environment.")
+    process.exit(1)
+}
+
 yargs(hideBin(process.argv)).scriptName("ipstack")
     .usage("$0 <cmd> [ip]")
     .command(
