@@ -2,6 +2,19 @@
 
 A tool for looking up coordinates based on an IP address.
 
+## Build
+
+You will need to have a recent working Node.js installed on your system. 
+
+First, clone the repository, then
+
+```shell
+npm install
+npm run build
+```
+
+That will compile the Typescript to Javascript so the tool can be used.
+
 ## Usage
 
 Ensure you have your IpStack API key defined in your local environment as:
