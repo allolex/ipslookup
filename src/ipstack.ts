@@ -5,6 +5,10 @@ import yargs from "yargs"
 import {hideBin} from "yargs/helpers"
 import {isIP} from "net"
 import axios from "axios"
+import axiosRetry from "axios-retry"
+
+// Configure retry request on failure three times with exponential backoff
+axiosRetry(axios, {retries: 3, retryDelay: axiosRetry.exponentialDelay})
 
 // The IpStack API key should remain secret, so we will store it in the environment.
 const apiKey = process.env["IPSTACK_API_KEY"]
@@ -26,7 +30,7 @@ yargs(hideBin(process.argv)).scriptName("ipstack")
             })
         },
         async (argv) => {
-            const { ip } = argv
+            const {ip} = argv
 
             // Light validation of IP address
             // TODO: Exclude private IP ranges
@@ -35,16 +39,24 @@ yargs(hideBin(process.argv)).scriptName("ipstack")
                 process.exit(1)
             }
 
-            const lookupUrl = `http://api.ipstack.com/${ip}?access_key=${apiKey}`
-            const response = await axios(lookupUrl)
-            const { latitude, longitude } = response.data
+            const lookupUrl = `http://api.ipstack.example.com/${ip}?access_key=${apiKey}`
 
-            // More human-readable, but harder to parse for piping operations.
-            // process.stdout.write(`\n{\n\tlatitude: ${latitude},\n\tlongitude: ${longitude}\n}\n`)
-            // TODO: Implement flags to switch output
-            process.stdout.write(`${latitude},${longitude}\n`)
+            const response = await axios.get(lookupUrl)
+                .catch(error => {
+                    process.stderr.write(`Could not get coordinates: [Error code: ${error.errno}] ${error.message}`)
+                    process.exit(1)
+                })
 
-            process.exit(0)
+            if (response) {
+                const {latitude, longitude} = response.data
+
+                // More human-readable, but harder to parse for piping operations.
+                // process.stdout.write(`\n{\n\tlatitude: ${latitude},\n\tlongitude: ${longitude}\n}\n`)
+                // TODO: Implement flags to switch output between human-readable and command pipeline-friendly.
+                process.stdout.write(`${latitude},${longitude}\n`)
+                process.exit(0)
+            }
+
         }
     )
     .strict()
