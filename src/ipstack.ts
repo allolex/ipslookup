@@ -39,7 +39,7 @@ yargs(hideBin(process.argv)).scriptName("ipstack")
                 process.exit(1)
             }
 
-            const lookupUrl = `http://api.ipstack.example.com/${ip}?access_key=${apiKey}`
+            const lookupUrl = `http://api.ipstack.com/${ip}?access_key=${apiKey}`
 
             const response = await axios.get(lookupUrl)
                 .catch(error => {
